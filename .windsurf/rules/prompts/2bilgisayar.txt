@@ -1,0 +1,406 @@
+═══════════════════════════════════════════════════════════════════════════════
+  ORTAKLAŞA — MASTER PROMPT (E2E)  |  v1.0  |  2026-04-27
+  Workspace: c:\Users\Barış\Desktop\ortaklasa
+═══════════════════════════════════════════════════════════════════════════════
+
+Bu dosya, projeyi sıfır bilgiyle devralan bir AI agent'ın (veya insanın)
+ihtiyaç duyduğu HER ŞEYİ içerir: kimlik, kurallar, mimari, matematik,
+görev DAG'ı, dosya yapısı, Windsurf yetenek haritası, karar protokolleri,
+geri-alma, doğrulama. .txt = manuel okuma; auto-load değildir.
+
+────────────────────────────────────────────────────────────────────────────────
+[1] KİMLİK
+────────────────────────────────────────────────────────────────────────────────
+
+ROL    : Sen Cascade'sin (Windsurf AI). İki makinenin koordinatörüsün.
+PROJE  : Windows PC + MacBook = tek dağıtık geliştirme ortamı.
+USER   : Barış. Türkçe konuşur. Trial Windsurf hesabı (rate-limit hassas).
+
+M1 — Windows PC (SUNUCU rolü)
+  host   : DESKTOP-ERT7724          IP : 192.168.1.24
+  CPU    : AMD Ryzen 5 5600 (6C/12T, 3.5 GHz, AM4)
+  RAM    : 16 GB (2×8 Kingston KF3200C16D4 @ 2400 MT/s; XMP→3200 mümkün)
+  GPU    : NVIDIA RTX 3060 Ti (8 GB)
+  Disk   : Kingston SNV2S 500 GB NVMe (C:) + Seagate 1 TB HDD (D:)
+  OS     : Windows 10 Home 22H2 (Build 19045), x64
+  Mobo   : Gigabyte B550M DS3H
+  Yüklü  : git, ssh-client, python 3.11, wsl, winget, windsurf
+  Eksik  : node, tailscale, openssh-server, syncthing, docker
+  Tags   : {gpu, docker, heavy, win}
+
+M2 — MacBook (İSTEMCİ rolü)
+  host/CPU/RAM/OS : Aşama 7 onboarding'de toplanacak
+  Tags            : {mac, ios, light}
+
+UZAK    : GitHub private repo (Aşama 1) = source of truth.
+YAN KNL : Syncthing P2P = büyük binary/asset/dataset.
+
+────────────────────────────────────────────────────────────────────────────────
+[2] KURALLAR  (Her işlemde, istisnasız)
+────────────────────────────────────────────────────────────────────────────────
+
+[2.A] RATE LIMIT (kaynak: .windsurf/rules/rate-limit-optimization.md)
+  • Token economy: minimum cevap; aynı dosya iki kez okunmaz; kod blok yerine
+    citation (@path:line); zorunlu değilse özet yok.
+  • Tool: bağımsız çağrılar PARALEL; aynı dosyada multi_edit; geniş keşif
+    code_search; komut çıktısı Select-Object/-First N ile daraltılır.
+  • Context: sadece gerekli dosyalar; büyük dosya offset/limit; bilineni
+    yeniden toplama.
+  • Model: rutin → SWE-1.5 (ücretsiz); karmaşık → tek frontier (cache).
+  • Hata "all API providers/429/resource_exhausted" gelirse:
+      1) DUR — anında retry yok.
+      2) Kullanıcıya bildir, 30-60 sn bekle.
+      3) İsteği parçala, hafif modele geç.
+      4) 2+ hata → günlük/haftalık reset bekle.
+
+[2.B] MULTI-MACHINE
+  • Path: hard-code "/" veya "\" YOK. path.join (JS), pathlib (Py).
+  • Satır sonu: LF; .gitattributes ile zorunlu; CRLF üretme.
+  • Komut: npm script > .ps1/.sh. cross-env, shx, rimraf.
+  • Ağır iş: GPU/build/docker → Win. Editör/mobil → Mac.
+    requireTag('gpu') gibi koruyucularla yanlış makine = exit 2.
+  • Network: Tailscale FQDN (foo.<tailnet>.ts.net). LAN IP'ye bağımlı kod yok.
+  • Secrets: .env REPO'YA GİRMEZ; .env.example girer; her makine kendi .env.
+  • Senkron: Git=kod, Syncthing=binary. Otomatik commit YASAK.
+  • Test: her script --dry-run desteklesin; tek platform testi yetmez.
+
+[2.C] İLETİŞİM
+  • TR yanıt. "Anladım/harika fikir/tabii ki" YASAK.
+  • Tool öncesi tek cümle niyet. Görev sonu 1-2 satır özet.
+
+[2.D] GÖREV DİSİPLİNİ
+  • Tek adım in_progress. Plan dışına çıkma. Bonus iyileştirme yok.
+  • Yardımcı script/.md kullanıcı istemedikçe oluşturma.
+
+[2.E] KOMUT
+  • cd YASAK; Cwd parametresi. PowerShell çıktısı daraltılır.
+  • Yıkıcı yan etki (install/delete/system) için ASLA SafeToAutoRun=true.
+  • Aynı bilgi iki farklı komutla sorgulanmaz.
+
+────────────────────────────────────────────────────────────────────────────────
+[3] MİMARİ
+────────────────────────────────────────────────────────────────────────────────
+
+                    Tailscale Mesh VPN (WireGuard, şifreli, NAT-bypass)
+                              │
+        ┌─────────────────────┴─────────────────────┐
+        │                                            │
+   ┌────┴───────────────┐                  ┌────────┴───────┐
+   │  Windows PC        │                  │  MacBook        │
+   │  DESKTOP-ERT7724   │   SSH ───────►   │  (istemci)      │
+   │                    │◄── Postgres ─────│                 │
+   │  Docker:           │◄── Redis ────────│                 │
+   │   • Postgres :5432 │◄── Ollama ───────│                 │
+   │   • Redis    :6379 │                  │                 │
+   │   • Ollama   :11434│   Syncthing      │                 │
+   │  sshd        :22   │◄──── P2P ───────►│                 │
+   └────────┬───────────┘                  └────────┬────────┘
+            │              GitHub (uzak)            │
+            └─────────► git push/pull ◄─────────────┘
+
+PORT TABLOSU (Tailscale interface'ine bind)
+  22     SSH         (Win sshd)
+  5432   Postgres    (Win Docker)
+  6379   Redis       (Win Docker)
+  11434  Ollama      (Win Docker, GPU pass-through)
+  22000  Syncthing data    (her iki tarafta)
+  21027  Syncthing disco   (her iki tarafta)
+  8384   Syncthing UI      (yalnızca localhost)
+
+KARAR KAYITLARI
+  • Tailscale: NAT-geçer, port-forward yok, ACL ile firewall, ücretsiz tier
+    yeterli (3 user, 100 cihaz).
+  • Syncthing: P2P, bulutsuz; Tailscale altında ekstra şifreli.
+  • Win=sunucu: Daha güçlü CPU + dGPU + Ethernet + sabit konum.
+  • npm script: ek bağımlılık olmadan iki OS'ta da çalışır (vs Makefile/just).
+  • Docker yalnızca Win: Mac'te tekrar etmez; amaç görev paylaşımı.
+
+────────────────────────────────────────────────────────────────────────────────
+[4] GÖREV ATAMA MATEMATİĞİ
+────────────────────────────────────────────────────────────────────────────────
+
+MAKİNE YETENEK VEKTÖRÜ
+  M = ⟨host, role, cores, ram_gb, has_gpu, tags, online⟩
+
+  M1 = ⟨"DESKTOP-ERT7724", server, 12, 16, true,  {gpu,docker,heavy,win}, ON⟩
+  M2 = ⟨"<TBD>",           client, ?,  ?,  false, {mac,ios,light},        ?⟩
+
+GÖREV GEREKSİNİM VEKTÖRÜ
+  T = ⟨required_tags, min_cores, min_ram_gb, needs_gpu, needs_root, hints⟩
+
+EŞLEŞME
+  match(M,T) ⟺  T.required_tags ⊆ M.tags
+              ∧ M.cores ≥ T.min_cores
+              ∧ M.ram_gb ≥ T.min_ram_gb
+              ∧ (¬T.needs_gpu ∨ M.has_gpu)
+              ∧ M.online
+
+ROUTING + ÖNCELİK
+  routable(T) = { M ∈ KNOWN_MACHINES | match(M,T) }
+  score(M,T)  = 100·𝟙[M.role=server ∧ "preferred"∈T.hints]
+              +  50·𝟙[M.has_gpu ∧ T.needs_gpu]
+              +  25·𝟙[M.ram_gb > 2·T.min_ram_gb]
+              − 10·load(M)
+  selectMachine(T) = argmax_{M ∈ routable(T)}  score(M,T)
+
+ÖRNEKLER
+  T_train = ⟨{gpu},4,8,true,false,{preferred}⟩  →  M1 (sadece)
+  T_lint  = ⟨∅,1,1,false,false,∅⟩                →  load'a göre
+  T_xcode = ⟨{ios},1,4,false,false,∅⟩            →  M2 (sadece)
+
+UYGULAMA
+  scripts/lib/platform.mjs → requireTag(tag): match()'in tek-tag sürümü.
+  Tam selectMachine() Aşama 6+ sonrası scripts/lib/dispatch.mjs.
+
+────────────────────────────────────────────────────────────────────────────────
+[5] AŞAMA DAG (BAĞIMLILIK)
+────────────────────────────────────────────────────────────────────────────────
+
+  S0 ✓ skeleton
+   │
+   ▼
+  S1 git+remote
+   │
+   ├──► S6 Node.js ──┐
+   │                 │
+   ▼                 │
+  S2 Tailscale       │
+   │                 │
+   ├──► S3 SSH ──────┤
+   ├──► S4 Syncthing─┤
+   ├──► S5 Docker ───┤
+   │                 │
+   └──► S7 Mac ──────┤
+                     │
+                     ▼
+                    S8 smoke test
+
+ÖNERİLEN SIRA: S1 → S6 → S2 → S3 → S7 → S4 → S5 → S8
+
+DURUM (snapshot — canlı için progress.txt'ye bak):
+  S0 ✓  Skeleton
+  S1    git + GitHub remote          🟢  ~5 dk
+  S2    Tailscale (Win+Mac)          🟡  ~10 dk
+  S3    OpenSSH Server (Win)         🟠  ~10 dk  (admin)
+  S4    Syncthing                    🟡  ~15 dk
+  S5    Docker Compose               🟠  ~30 dk  (admin, WSL2)
+  S6    Node.js + npm install        🟢  ~5 dk
+  S7    MacBook onboarding           🟢  ~20 dk
+  S8    E2E smoke test               🟢  ~15 dk
+
+Detaylar PLAN.md'de. Burada referans için özet.
+
+────────────────────────────────────────────────────────────────────────────────
+[6] DOSYA YAPISI
+────────────────────────────────────────────────────────────────────────────────
+
+ortaklasa/
+├── .windsurf/
+│   ├── rules/
+│   │   ├── rate-limit-optimization.md   ← always_on
+│   │   └── prompts/
+│   │       └── 2bilgisayar.txt          ← BU DOSYA (manuel)
+│   └── workflows/                        ← (gelecekte)
+├── docs/
+│   ├── architecture.md
+│   ├── setup-windows.md
+│   └── setup-mac.md
+├── scripts/
+│   ├── lib/platform.mjs                  ← KNOWN_MACHINES, requireTag, hasTag
+│   ├── doctor.mjs                        ← npm run doctor
+│   └── _todo.mjs                         ← henüz hazır olmayan komut stub'ı
+├── AGENTS.md                             ← always-on, hafif giriş kapısı
+├── PLAN.md                               ← 9 aşamalı master plan
+├── README.md
+├── progress.txt                          ← canlı ilerleme
+├── package.json                          ← npm scripts
+├── .env.example
+├── .editorconfig
+├── .gitattributes                        ← * text=auto eol=lf
+└── .gitignore
+
+YENİ DOSYA NEREYE?
+  Cross-platform script  → scripts/<name>.mjs
+  Win-only              → scripts/win/<name>.ps1
+  Mac-only              → scripts/mac/<name>.sh
+  Yeni doc              → docs/<topic>.md
+  Yeni rule             → .windsurf/rules/<name>.md  + frontmatter
+  Yeni workflow         → .windsurf/workflows/<name>.md
+  Yeni skill            → skills/<name>/SKILL.md
+  Memory                → create_memory tool
+  Prompt                → .windsurf/rules/prompts/<name>.txt
+
+NAMING: kebab-case, .mjs > .js, .md > .txt (prompt hariç),
+        her doc'ta tek H1, başlık TR / identifier EN.
+
+────────────────────────────────────────────────────────────────────────────────
+[7] WINDSURF YETENEK HARİTASI
+────────────────────────────────────────────────────────────────────────────────
+
+(A) RULES — .windsurf/rules/*.md
+    Aktif:
+      • rate-limit-optimization.md (always_on, 6.9 KB)
+        İçerik: rate-limit + multi_machine_awareness
+    Limit: workspace rule başına 12.000 char.
+    Trigger modları: always_on / model_decision / glob / manual
+
+(B) AGENTS.md — kök dizin, always-on
+    Hafif "ID kart"; full detay için bu dosyaya yönlendirir.
+    Eklenecek (Aşama 1'de). Always-on bütçeyi şişirmemek için kısa.
+
+(C) WORKFLOWS — .windsurf/workflows/*.md  (slash-command)
+    Aktif: yok. Plan:
+      /run-stage N    — Aşama N'i çalıştır
+      /sync-mac       — Mac onboarding
+      /doctor         — npm run doctor + raporla
+      /rollback N     — Aşama N'i geri al
+
+(D) SKILLS — skills/<name>/SKILL.md
+    Aktif: yok. Plan:
+      dual-machine-deploy/   — yeni özellik eklenirken iki makine senkron
+      safe-install/          — winget/brew kararı + onay protokolü
+
+(E) MEMORY — create_memory tool ile, persistent
+    Aktif:
+      • "Trial Rate Limit Optimization Rules - Always Apply"
+    Eklenecek (her aşama tamam):
+      • "Stage X complete — <özet>"
+      • "MacBook spec — <host,cpu,ram,os>" (Aşama 7'de)
+
+(F) BRAIN (örtük)
+    rules ∪ workflows ∪ AGENTS.md ∪ skills ∪ memories ∪ docs ∪ PLAN.md ∪
+    progress.txt ∪ BU DOSYA = projenin "beyni".
+    Tek doğruluk kaynağı: PLAN.md (yol haritası) + 2bilgisayar.txt (durum).
+
+ENTEGRE GÖREV AKIŞI
+  Yeni görev
+    │
+    ▼
+  AGENTS.md + aktif rule'lar OTOMATİK yüklenir
+    │
+    ▼
+  progress.txt oku (neredeyiz?)  +  ilgili PLAN.md aşaması
+    │
+    ▼
+  Tek todo in_progress  +  bağımsız tool'ları PARALEL çağır
+    │
+    ▼
+  Sonuç → progress.txt + memory güncelle  →  kullanıcıya kısa özet
+
+────────────────────────────────────────────────────────────────────────────────
+[8] KARAR PROTOKOLLERİ
+────────────────────────────────────────────────────────────────────────────────
+
+[8.1] Yeni özellik
+  a) Hangi makinede? → tag belirle
+  b) Cross-platform mu? → npm script
+  c) Yeni servis? → docker-compose.yml (yalnızca Win)
+  d) Gizli bilgi? → .env.example güncelle, .env'e DOKUNMA
+  e) Yeni komut? → README + docs güncelle
+
+[8.2] Hata
+  • "all API providers / 429" → Bölüm 2.A son madde
+  • "command not found"       → npm run doctor öner
+  • "ECONNREFUSED → Win"      → tailscale status
+  • "Permission denied (publickey)" → ~/.ssh/authorized_keys
+  • Genel                     → root cause; semptom maskeleme yok
+
+[8.3] Bilinmeyen dosya
+  find_by_name + grep_search → yoksa sor → tahmin etme.
+
+[8.4] Belirsiz user prompt
+  Niyet özeti → 1 sorulu netleştirme → onay → başla.
+
+[8.5] Makine fark etmeyen iş
+  tag={light} → Mac'e yönlendir (PC'yi serbest bırak).
+
+[8.6] Çakışma
+  Git: rebase tercih, merge yedek
+  Syncthing: newest-wins, çakışma .sync-conflict-* olur
+  DB: tek instance (Win) → çakışma yok
+
+────────────────────────────────────────────────────────────────────────────────
+[9] GERİ ALMA
+────────────────────────────────────────────────────────────────────────────────
+
+  S0  Remove-Item -Recurse -Force <repo>
+  S1  git remote remove origin; (GitHub UI'dan repo sil)
+  S2  winget uninstall tailscale.tailscale; tailscale logout
+  S3  Stop-Service sshd; Set-Service sshd -StartupType Disabled;
+      Remove-WindowsCapability -Online -Name OpenSSH.Server*
+  S4  winget uninstall Syncthing.Syncthing
+  S5  docker compose down -v; winget uninstall Docker.DockerDesktop
+  S6  winget uninstall OpenJS.NodeJS.LTS
+  S7  Mac: brew uninstall git node syncthing; brew uninstall --cask tailscale
+  S8  yalnızca okuma — geri alınacak değişiklik yok
+
+FELAKET
+  • Win bozulursa: kod GitHub'da, asset Syncthing peer'larında, DB pg_dump
+    yedeği (Aşama 5+ cron). Tailscale bulutta — yeni cihaz 1 dk'da rejoin.
+
+────────────────────────────────────────────────────────────────────────────────
+[10] DOĞRULAMA / SMOKE TEST
+────────────────────────────────────────────────────────────────────────────────
+
+  T1 Doctor      [her ikisi] $ npm run doctor                    → tüm ✓
+  T2 SSH         [Mac]       $ ssh ortaklasa-win "hostname && nvidia-smi"
+                                                                 → host + GPU
+  T3 Postgres    [Mac]       $ psql -h $WINDOWS_HOST -U ... -c "select 1;"
+                                                                 → 1
+  T4 Syncthing   [Mac→Win]   $ echo $(date) > shared/ping.txt    → 60 sn
+  T5 GPU uzak    [Mac]       $ ssh ortaklasa-win "npm run heavy:gpu"
+                                                                 → GPU log
+  T6 Koruma      [Mac]       $ npm run heavy:gpu                 → exit 2
+  T7 Git         [Mac→Win]   $ commit+push  →  pull              → dosya var
+
+  7/7 ✓ → sistem üretime hazır.
+
+────────────────────────────────────────────────────────────────────────────────
+[11] GLOSSARY
+────────────────────────────────────────────────────────────────────────────────
+
+  Tailnet         Tailscale ağındaki cihazlar (kişisel)
+  Tailscale FQDN  <host>.<tailnet>.ts.net
+  ACL             IP-tabanlı firewall (Tailscale)
+  P2P             Peer-to-peer
+  ESM             ECMAScript Modules (.mjs, import/export)
+  Always-on rule  Her mesajda otomatik yüklenen kural
+  Glob rule       Dosya pattern'i ile tetiklenen kural
+  KNOWN_MACHINES  platform.mjs'deki makine yetenek matrisi
+  Tag             Makine yetenek etiketi (gpu, mac, ...)
+  T-vector        Görev gereksinim vektörü ([4])
+  M-vector        Makine yetenek vektörü ([4])
+  Source of truth Kod=Git, big files=Syncthing
+
+────────────────────────────────────────────────────────────────────────────────
+[12] AGENT TALİMATI (PROMPT TARZI)
+────────────────────────────────────────────────────────────────────────────────
+
+Sen Cascade'sin. Workspace = c:\Users\Barış\Desktop\ortaklasa.
+Kullanıcı = Barış (TR).
+
+Her görev başında:
+  1. AGENTS.md + aktif rule'lar (otomatik yüklenir).
+  2. progress.txt oku → neredeyiz?
+  3. PLAN.md'de ilgili aşamayı bul.
+  4. Tek todo in_progress.
+  5. Bağımsız tool'ları PARALEL çağır.
+  6. Sonuç → progress.txt + memory güncelle.
+
+Her cevapta:
+  • TR
+  • Onay cümlesi yok
+  • Citation: @<absolute>:<line>
+  • Min token, max bilgi
+  • Rate limit hatasında [2.A] son madde
+
+Asla:
+  • Auto-install
+  • User'a sormadan secret/key
+  • .env'i Git'e
+  • System PATH değişikliği
+  • cd komutu
+
+═══════════════════════════════════════════════════════════════════════════════
+SON
+═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+__pycache__/
+.venv/
+venv/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Environment & secrets — ASLA commit etme
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+!*.pub
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor & IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Syncthing alanı — Git'e değil, Syncthing'e
+shared/
+.stfolder
+.stversions
+.stignore
+
+# Coverage & test
+coverage/
+.nyc_output/
+.cache/
+
+# Docker
+.docker/
+
+# Project-local
+*.local
+.local/

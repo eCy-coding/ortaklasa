@@ -1,0 +1,29 @@
+Ortaklaşa — İlerleme Takibi
+============================
+
+Son güncelleme: 2026-04-27
+
+Aşama   Durum     Açıklama
+------  --------  --------------------------------------------------
+0       ✓ DONE    Proje iskeleti (PLAN.md, package.json, .gitignore vb.)
+1       □ TODO    Git init + uzak repo (GitHub/GitLab)
+2       □ TODO    Tailscale kur (Windows + Mac)
+3       □ TODO    Windows'ta OpenSSH Server
+4       □ TODO    Syncthing kur ve eşle
+5       □ TODO    Docker Desktop + compose (Postgres/Redis/Ollama)
+6       □ TODO    Node.js + cross-platform task runner
+7       □ TODO    MacBook onboarding
+8       □ TODO    Uçtan uca smoke test
+
+Notlar:
+- Aşama 0 sırasında repo'da `.windsurf/rules/rate-limit-optimization.md`
+  oluşturuldu; multi_machine_awareness bölümü eklendi.
+- Master prompt: `.windsurf/rules/prompts/2bilgisayar.txt` (407 satır,
+  uçtan uca dokümantasyon — kimlik, kurallar, mimari, matematik, DAG,
+  geri-alma, smoke test, glossary, agent talimatı).
+- AGENTS.md kök dizine eklendi (always-on, hafif giriş kapısı).
+- Memory: "Ortaklasa Project — Master Prompt Location & Capability Map"
+  oluşturuldu (yeni oturumda Cascade buradan başlar).
+- Mevcut Windows araçları: git, ssh client, python 3.11, wsl, winget, windsurf.
+- Eksikler (her aşamada bir tanesi): node, tailscale, openssh-server,
+  syncthing, docker, (opsiyonel: pwsh, just).

@@ -1,0 +1,21 @@
+{
+  "name": "ortaklasa",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Windows PC + MacBook ortak çalışma ortamı",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "doctor": "node scripts/doctor.mjs",
+    "where": "node scripts/lib/platform.mjs",
+    "dev": "node scripts/_todo.mjs dev 6",
+    "heavy:gpu": "node scripts/_todo.mjs heavy:gpu 5",
+    "mobile:ios": "node scripts/_todo.mjs mobile:ios 7",
+    "db:up": "node scripts/_todo.mjs db:up 5",
+    "db:down": "node scripts/_todo.mjs db:down 5",
+    "db:status": "node scripts/_todo.mjs db:status 5",
+    "sync:status": "node scripts/_todo.mjs sync:status 4"
+  }
+}
