@@ -3,17 +3,31 @@ Ortaklaşa — İlerleme Takibi
 
 Son güncelleme: 2026-04-27
 
-Aşama   Durum     Açıklama
-------  --------  --------------------------------------------------
-0       ✓ DONE    Proje iskeleti (PLAN.md, package.json, .gitignore vb.)
-1       ◐ HALF    Git init + ilk commit DONE (6db7307); push BEKLENİYOR
-2       □ TODO    Tailscale kur (Windows + Mac)
-3       □ TODO    Windows'ta OpenSSH Server
-4       □ TODO    Syncthing kur ve eşle
-5       □ TODO    Docker Desktop + compose (Postgres/Redis/Ollama)
-6       □ TODO    Node.js + cross-platform task runner
-7       □ TODO    MacBook onboarding
-8       □ TODO    Uçtan uca smoke test
+FAZ A — Pre-install kodlama (kullanıcı onayı gerektirmiyor)
+ID    Durum   Açıklama
+----  ------  --------------------------------------------------
+A.0   ✓ DONE  Skeleton (PLAN.md, package.json, .gitignore, .gitattributes vb.)
+A.1   ✓ DONE  Foundation libs: scripts/lib/{env,log,dispatch}.mjs + platform.mjs (cores/ramGb/hasGpu)
+A.2   ✓ DONE  Workflows: /doctor, /run-stage, /sync-mac, /rollback
+A.3   ✓ DONE  Skills: dual-machine-deploy, safe-install
+A.4   ✓ DONE  Stage-prep config: docker-compose.yml, tailscale ACL, sshd template, syncthing template, postgres init, install-openssh.ps1
+A.5   ✓ DONE  npm scripts impl: dev/heavy-gpu/db/sync/mobile-ios (artık _todo değil)
+A.6   ✓ DONE  Stage installer: scripts/stage/install.mjs (winget/brew wrapper)
+A.7   ✓ DONE  Smoke test framework: scripts/test.mjs (T1..T7, tek dosya)
+A.8   ✓ DONE  CI: .github/workflows/ci.yml (Win+Mac matrix, doctor + dispatch)
+A.9   ✓ DONE  Docs: troubleshooting, security, runbook
+
+FAZ B — Kurulum + yürütme (kullanıcı onayı gerekiyor)
+ID    Durum   Açıklama
+----  ------  --------------------------------------------------
+B.1   ◐ HALF  Stage 1: git init + commit DONE; GitHub repo + push BEKLENİYOR
+B.2   □ TODO  Stage 2: Tailscale install (Win + Mac), login, FQDN doğrula
+B.3   □ TODO  Stage 3: OpenSSH Server (Win, admin) + Mac key authorize
+B.4   □ TODO  Stage 4: Syncthing + iki cihazı eşle
+B.5   □ TODO  Stage 5: Docker Desktop + compose up (Postgres/Redis/Ollama)
+B.6   □ TODO  Stage 6: Node.js LTS install (Win + Mac) → npm install → doctor ✓
+B.7   □ TODO  Stage 7: MacBook onboarding (homebrew, git, node, tailscale, ssh, KNOWN_MACHINES)
+B.8   □ TODO  Stage 8: E2E smoke test (T1..T7 — 7/7 ✓)
 
 Notlar:
 - Aşama 0 sırasında repo'da `.windsurf/rules/rate-limit-optimization.md`
