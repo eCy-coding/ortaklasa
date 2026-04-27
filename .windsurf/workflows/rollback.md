@@ -46,7 +46,7 @@ Her komut için kullanıcıdan açık "evet" gerekir.
 Birden çok aşama bozulduysa veya sistem bozulduysa, tam sıfırlama:
 
 1. Repo klasörünü sil: `Remove-Item -Recurse -Force <repo>`
-2. Yeni klone: `git clone https://github.com/eCy/ortaklasa.git`
+2. Yeni klone: `git clone https://github.com/eCy-coding/ortaklasa.git`
 3. Tailscale logout + uninstall.
 4. (Win admin) tüm Windows capability'leri remove et.
 5. Master prompt §9 son madde — felaket kurtarma rehberi.

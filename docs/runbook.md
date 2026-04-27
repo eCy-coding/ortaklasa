@@ -64,7 +64,7 @@ node scripts/test.mjs t1 t7    # seçili
 
 ## Aşama yürütme (yeni cihaz/sıfırdan)
 
-1. `git clone https://github.com/eCy/ortaklasa.git`
+1. `git clone https://github.com/eCy-coding/ortaklasa.git`
 2. `cp .env.example .env` → değerleri doldur
 3. Stage runner ile aşama aşama:
    ```bash

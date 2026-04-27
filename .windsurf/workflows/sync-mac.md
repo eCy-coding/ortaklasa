@@ -42,7 +42,7 @@ sysctl -n machdep.cpu.brand_string 2>/dev/null || sysctl -n hw.model
 3. `brew install --cask tailscale` → login (Win ile aynı hesap)
 4. SSH anahtarı: `ssh-keygen -t ed25519 -C "macbook-baris" -f ~/.ssh/ortaklasa`
 5. Public key'i Win'deki `~/.ssh/authorized_keys`'e ekle (Aşama 3 sonrası)
-6. `git clone https://github.com/eCy/ortaklasa.git ~/Code/ortaklasa`
+6. `git clone https://github.com/eCy-coding/ortaklasa.git ~/Code/ortaklasa`
 7. `cp .env.example .env` → değerleri doldur
 8. `npm install && npm run doctor`
 

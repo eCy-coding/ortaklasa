@@ -25,7 +25,7 @@ B.2   □ TODO  Stage 2: Tailscale install (Win + Mac), login, FQDN doğrula
 B.3   □ TODO  Stage 3: OpenSSH Server (Win, admin) + Mac key authorize
 B.4   □ TODO  Stage 4: Syncthing + iki cihazı eşle
 B.5   □ TODO  Stage 5: Docker Desktop + compose up (Postgres/Redis/Ollama)
-B.6   □ TODO  Stage 6: Node.js LTS install (Win + Mac) → npm install → doctor ✓
+B.6   ✓ DONE  Stage 6 Win: Node.js v24.15.0 + npm 11.12.1; doctor 4/4 kritik ✓; dev/dispatch/test çalışıyor (Mac yapılacak Aşama 7'de)
 B.7   □ TODO  Stage 7: MacBook onboarding (homebrew, git, node, tailscale, ssh, KNOWN_MACHINES)
 B.8   □ TODO  Stage 8: E2E smoke test (T1..T7 — 7/7 ✓)
 
