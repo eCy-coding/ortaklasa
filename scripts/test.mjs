@@ -16,7 +16,10 @@ import { header, ok, info, warn, err, step } from './lib/log.mjs';
 const env = loadEnv({ optional: true });
 
 function cmd(c, opts = {}) {
-  return execSync(c, { encoding: 'utf8', stdio: ['ignore','pipe','pipe'], ...opts }).trim();
+  // stdio override 'ignore' iken execSync null/undefined döner → trim() patlar.
+  // Null-safe: out yoksa boş string döndür.
+  const out = execSync(c, { encoding: 'utf8', stdio: ['ignore','pipe','pipe'], ...opts });
+  return (out ?? '').trim();
 }
 
 // === Test'ler ===
