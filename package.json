@@ -23,6 +23,14 @@
     "mac:authorize": "powershell -ExecutionPolicy Bypass -File scripts/win/add-mac-key.ps1",
     "test": "node scripts/test.mjs all",
     "test:t1": "node scripts/test.mjs t1",
-    "test:t6": "node scripts/test.mjs t6"
+    "test:t2": "node scripts/test.mjs t2",
+    "test:t3": "node scripts/test.mjs t3",
+    "test:t4": "node scripts/test.mjs t4",
+    "test:t5": "node scripts/test.mjs t5",
+    "test:t6": "node scripts/test.mjs t6",
+    "test:t7": "node scripts/test.mjs t7",
+    "test:win": "node scripts/test.mjs t1 t6 t7",
+    "test:mac": "node scripts/test.mjs t1 t2 t5 t7",
+    "lint": "node --check scripts/**/*.mjs && echo lint OK"
   }
 }
