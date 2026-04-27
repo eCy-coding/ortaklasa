@@ -19,11 +19,20 @@ export const KNOWN_MACHINES = {
   'DESKTOP-ERT7724': {
     role: 'server',
     tags: ['gpu', 'docker', 'heavy', 'win'],
+    cores: 12,                              // 6C/12T (Ryzen 5 5600)
+    ramGb: 16,
+    hasGpu: true,
     gpu: 'NVIDIA GeForce RTX 3060 Ti',
+    os: 'win32',
     note: 'Windows PC — sunucu rolü',
   },
-  // Mac onboarding sonrası eklenecek:
-  // 'macbook-baris': { role: 'client', tags: ['mac','ios','light'] },
+  // Mac onboarding (Aşama 7) sonrası eklenecek:
+  // '<mac-hostname>': {
+  //   role: 'client',
+  //   tags: ['mac','ios','light'],
+  //   cores: ?, ramGb: ?, hasGpu: false, os: 'darwin',
+  //   note: 'MacBook — istemci rolü',
+  // },
 };
 
 export function currentMachine() {

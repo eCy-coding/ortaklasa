@@ -6,7 +6,7 @@ Son güncelleme: 2026-04-27
 Aşama   Durum     Açıklama
 ------  --------  --------------------------------------------------
 0       ✓ DONE    Proje iskeleti (PLAN.md, package.json, .gitignore vb.)
-1       □ TODO    Git init + uzak repo (GitHub/GitLab)
+1       ◐ HALF    Git init + ilk commit DONE (6db7307); push BEKLENİYOR
 2       □ TODO    Tailscale kur (Windows + Mac)
 3       □ TODO    Windows'ta OpenSSH Server
 4       □ TODO    Syncthing kur ve eşle
