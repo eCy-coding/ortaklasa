@@ -4,7 +4,7 @@
 // Kullanım: node scripts/doctor.mjs
 // Çıkış kodu: 0 = her şey tamam, 1 = eksik var (uyarı), 2 = kritik eksik
 
-import { execSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { IS_WIN, IS_MAC, HOSTNAME, currentMachine, TOTAL_MEM_GB, CPU_COUNT } from './lib/platform.mjs';
 
 const checks = [
@@ -19,12 +19,17 @@ const checks = [
 ];
 
 function run(cmd) {
-  try {
-    const out = execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
-    return out.split('\n')[0].trim();
-  } catch {
-    return null;
-  }
+  // Hem stdout hem stderr'i yakala — ssh gibi versiyonu stderr'e yazanları
+  // doğru raporlamak için. Exit 0 ise başarı sayılır.
+  // shell: true — Windows'ta .cmd/.bat wrapper'ları (npm, tailscale vb.)
+  // çalıştırabilmek için. Node 18.20+/20.12+/21.7+ güvenlik gereği zorunlu.
+  // Burada cmd literal sabit (kullanıcı input yok) → injection riski yok.
+  const r = spawnSync(cmd, { encoding: 'utf8', shell: true });
+  if (r.error) return null;                       // bin bulunamadı
+  if (r.status !== 0 && r.status !== null) return null;
+  const text = (r.stdout || '') + (r.stderr || '');
+  const first = text.split(/\r?\n/)[0].trim();
+  return first || null;
 }
 
 console.log(`\n=== ortaklasa doctor — ${HOSTNAME} ===`);

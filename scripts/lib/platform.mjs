@@ -3,6 +3,7 @@
 
 import os from 'node:os';
 import { execSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 export const PLATFORM = process.platform; // 'win32' | 'darwin' | 'linux'
 export const IS_WIN = PLATFORM === 'win32';
@@ -67,7 +68,7 @@ export function detectGpu() {
 }
 
 // CLI'dan doğrudan çağrıldığında özet yazdır.
-if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const m = currentMachine();
   console.log('hostname     :', HOSTNAME);
   console.log('platform     :', PLATFORM, ARCH);

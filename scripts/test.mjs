@@ -22,14 +22,21 @@ function cmd(c, opts = {}) {
 // === Test'ler ===
 
 async function t1_doctor() {
-  // npm run doctor exit=0 mı?
+  // Doctor çıkış kodları:
+  //   0 = tüm araçlar tamam     → ✓
+  //   1 = opsiyonel eksik       → ⚠ tolere
+  //   2 = kritik eksik          → ✗ fail
   try {
     cmd('node scripts/doctor.mjs');
     ok('T1 doctor: tüm araçlar ✓');
     return true;
   } catch (e) {
-    const code = e.status ?? 'bilinmiyor';
-    err(`T1 doctor: exit ${code} (eksik araç)`);
+    const code = e.status ?? -1;
+    if (code === 1) {
+      warn('T1 doctor: opsiyonel araç eksik (tolere edildi)');
+      return true;
+    }
+    err(`T1 doctor: exit ${code} — kritik araç eksik`);
     return false;
   }
 }
@@ -37,7 +44,7 @@ async function t1_doctor() {
 async function t2_ssh() {
   // Mac → Win SSH (sadece Mac'te anlamlı)
   if (!hasTag('mac')) {
-    warn('T2 ssh: Mac değilim, atlandı (yalnızca Mac'ten test edilir)');
+    warn("T2 ssh: Mac değilim, atlandı (yalnızca Mac'ten test edilir)");
     return true;
   }
   const host = env.WINDOWS_HOST;

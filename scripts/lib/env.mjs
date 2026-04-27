@@ -58,7 +58,7 @@ export function requireEnv(keys, env = process.env) {
   return Object.fromEntries(keys.map(k => [k, env[k]]));
 }
 
-if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const env = loadEnv({ optional: true });
   const keys = Object.keys(env).filter(k => !k.startsWith('npm_') && k !== 'PATH');
   console.log(`Yüklü (npm/PATH hariç) ${keys.length} değişken.`);

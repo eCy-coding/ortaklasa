@@ -10,6 +10,7 @@
 //   KNOWN_MACHINES      — platform.mjs içinden, makine yetenek matrisi.
 //   isOnline / load     — şimdilik stub; Stage 2/8 sonrası gerçekleştirilecek.
 
+import { fileURLToPath } from 'node:url';
 import { KNOWN_MACHINES, HOSTNAME } from './platform.mjs';
 
 // Stub — Stage 2 sonrası: `tailscale status --json` parse edilir.
@@ -92,7 +93,7 @@ export function isCurrentMachine(machine) {
 }
 
 // === CLI: örnek görevle dispatch dene ===
-if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const examples = [
     { name: 'train-llm',  requiredTags: ['gpu'],    minCores: 4, minRamGb: 8,
       needsGpu: true, hints: ['preferred'] },
