@@ -1,0 +1,52 @@
+# GitHub Actions CI — push/PR'da temel sağlık kontrolleri.
+# Win + Mac matris. Yalnızca Stage 6 sonrası anlamlı (Node.js gerekir).
+# Tag/auth gerektiren testler atlanır (CI runner'larda Tailscale yok).
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  doctor:
+    name: doctor (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Print platform
+        shell: bash
+        run: |
+          echo "OS: $RUNNER_OS"
+          echo "Hostname: $(hostname)"
+          node --version
+          npm --version
+
+      - name: Run doctor (opsiyonel araçlar eksik — exit 1 OK)
+        shell: bash
+        run: |
+          node scripts/doctor.mjs || code=$?
+          # exit 1 = opsiyonel eksik (tolere et); exit 2 = kritik (fail)
+          if [ "${code:-0}" = "2" ]; then exit 2; fi
+
+      - name: Run dispatch demo
+        run: node scripts/lib/dispatch.mjs
+
+      - name: Run dev (smoke)
+        run: node scripts/dev.mjs
+
+      - name: Smoke tests (kritik olmayanlar atlanır)
+        run: node scripts/test.mjs t1 t6 t7

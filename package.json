@@ -10,12 +10,18 @@
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
     "where": "node scripts/lib/platform.mjs",
-    "dev": "node scripts/_todo.mjs dev 6",
-    "heavy:gpu": "node scripts/_todo.mjs heavy:gpu 5",
-    "mobile:ios": "node scripts/_todo.mjs mobile:ios 7",
-    "db:up": "node scripts/_todo.mjs db:up 5",
-    "db:down": "node scripts/_todo.mjs db:down 5",
-    "db:status": "node scripts/_todo.mjs db:status 5",
-    "sync:status": "node scripts/_todo.mjs sync:status 4"
+    "dispatch": "node scripts/lib/dispatch.mjs",
+    "dev": "node scripts/dev.mjs",
+    "heavy:gpu": "node scripts/heavy-gpu.mjs",
+    "mobile:ios": "node scripts/mobile-ios.mjs",
+    "db:up": "node scripts/db.mjs up",
+    "db:down": "node scripts/db.mjs down",
+    "db:status": "node scripts/db.mjs status",
+    "db:logs": "node scripts/db.mjs logs",
+    "sync:status": "node scripts/sync.mjs status",
+    "stage:install": "node scripts/stage/install.mjs",
+    "test": "node scripts/test.mjs all",
+    "test:t1": "node scripts/test.mjs t1",
+    "test:t6": "node scripts/test.mjs t6"
   }
 }
