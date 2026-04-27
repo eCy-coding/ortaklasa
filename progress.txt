@@ -22,7 +22,7 @@ ID    Durum   Açıklama
 ----  ------  --------------------------------------------------
 B.1   ✓ DONE  Stage 1: GitHub repo (eCy-coding/ortaklasa, private) + 6 commit push edildi
 B.2   ✓ DONE  Stage 2: Tailscale 1.96.3 Win, login OK (emrecnyn@), tailnet=tail75df7f.ts.net, .env doldu
-B.3   □ TODO  Stage 3: OpenSSH Server (Win, admin) + Mac key authorize
+B.3   ✓ DONE  Stage 3: OpenSSH Server kuruldu, sshd Running/Auto, port 22 LISTENING, firewall ✓, authorized_keys hazir (Mac key Asama 7'de eklenecek)
 B.4   □ TODO  Stage 4: Syncthing + iki cihazı eşle
 B.5   □ TODO  Stage 5: Docker Desktop + compose up (Postgres/Redis/Ollama)
 B.6   ✓ DONE  Stage 6 Win: Node.js v24.15.0 + npm 11.12.1; doctor 4/4 kritik ✓; dev/dispatch/test çalışıyor (Mac yapılacak Aşama 7'de)
