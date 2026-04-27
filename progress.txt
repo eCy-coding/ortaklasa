@@ -20,7 +20,7 @@ A.9   ✓ DONE  Docs: troubleshooting, security, runbook
 FAZ B — Kurulum + yürütme (kullanıcı onayı gerekiyor)
 ID    Durum   Açıklama
 ----  ------  --------------------------------------------------
-B.1   ◐ HALF  Stage 1: git init + commit DONE; GitHub repo + push BEKLENİYOR
+B.1   ✓ DONE  Stage 1: GitHub repo (eCy-coding/ortaklasa, private) + 6 commit push edildi
 B.2   □ TODO  Stage 2: Tailscale install (Win + Mac), login, FQDN doğrula
 B.3   □ TODO  Stage 3: OpenSSH Server (Win, admin) + Mac key authorize
 B.4   □ TODO  Stage 4: Syncthing + iki cihazı eşle
