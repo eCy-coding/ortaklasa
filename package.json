@@ -20,6 +20,7 @@
     "db:logs": "node scripts/db.mjs logs",
     "sync:status": "node scripts/sync.mjs status",
     "stage:install": "node scripts/stage/install.mjs",
+    "mac:authorize": "powershell -ExecutionPolicy Bypass -File scripts/win/add-mac-key.ps1",
     "test": "node scripts/test.mjs all",
     "test:t1": "node scripts/test.mjs t1",
     "test:t6": "node scripts/test.mjs t6"

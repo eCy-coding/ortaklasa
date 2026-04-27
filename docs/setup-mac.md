@@ -2,6 +2,45 @@
 
 > Detaylı plan: [`PLAN.md`](../PLAN.md). Bu dosya yalnızca Mac'e özgü adımları özetler.
 
+## ⚡ Hızlı kurulum (önerilen — tek komut)
+
+Mac'te terminal aç ve aşağıdaki tek komutu çalıştır:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/eCy-coding/ortaklasa/main/scripts/mac/onboard.sh)
+```
+
+Bu script aşağıdaki tüm adımları otomatik yapar:
+
+| Adım | İşlem | Etkileşim |
+|---|---|---|
+| 1 | Homebrew install (yoksa) | macOS yönetici parolası |
+| 2 | `brew install git node syncthing` | otomatik |
+| 3 | Tailscale install + login | **menü çubuğunda Log In** (Win ile aynı hesap) |
+| 4 | SSH ed25519 key + `~/.ssh/config` | otomatik |
+| 5 | Pub key'i `scp` ile Win'e gönder | **Win SSH parolası 1 kez** |
+| 6 | Repo clone (`~/Code/ortaklasa`) | otomatik |
+| 7 | `.env` oluştur (template'ten) | PG_PASSWORD manuel |
+| 8 | `KNOWN_MACHINES`'e Mac eklenir | otomatik (Node.js patch) |
+| 9 | `npm install` + `npm run doctor` | otomatik |
+
+Script bittiğinde Win'de bir komut çalıştırman gerekir:
+
+```powershell
+npm run mac:authorize
+```
+
+Sonra Mac'te test:
+
+```bash
+ssh ortaklasa-win 'hostname'
+# → DESKTOP-ERT7724  (parolasız)
+```
+
+---
+
+## Manuel kurulum (adım adım — script çalışmazsa)
+
 ## 1. Homebrew
 
 ```bash

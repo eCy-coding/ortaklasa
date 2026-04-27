@@ -26,7 +26,7 @@ B.3   ✓ DONE  Stage 3: OpenSSH Server kuruldu, sshd Running/Auto, port 22 LIST
 B.4   ✓ DONE  Stage 4 Win: Syncthing 2.0.16, ScheduledTask AtLogOn, UI=127.0.0.1:8384 (Mac esleme Asama 7)
 B.5   ✓ DONE  Stage 5 Win: Docker Desktop kuruldu (winget). Engine ilk acilis: Start Menu -> Docker Desktop -> EULA. Sonra: npm run db:up
 B.6   ✓ DONE  Stage 6 Win: Node.js v24.15.0 + npm 11.12.1; doctor 4/4 kritik ✓; dev/dispatch/test çalışıyor (Mac yapılacak Aşama 7'de)
-B.7   □ TODO  Stage 7: MacBook onboarding (homebrew, git, node, tailscale, ssh, KNOWN_MACHINES)
+B.7   ◐ READY  Stage 7 hazirligi: scripts/mac/onboard.sh tek-komut, scripts/win/add-mac-key.ps1, npm run mac:authorize. Mac kullanici manual run.
 B.8   ◐ HALF  Stage 8 Win: t1 ✓ t6 ✓ t7 ✓ (3/3 Win-only). Mac testleri (t2/t3/t5) Asama 7 sonrasi.
 
 Notlar:

@@ -37,10 +37,23 @@ export const KNOWN_MACHINES = {
 };
 
 export function currentMachine() {
-  return KNOWN_MACHINES[HOSTNAME] ?? {
-    role: 'unknown',
-    tags: IS_WIN ? ['win'] : IS_MAC ? ['mac'] : ['linux'],
-    note: `Bilinmeyen makine: ${HOSTNAME}. KNOWN_MACHINES'e ekle.`,
+  // Bilinen makineyse direkt dön.
+  if (KNOWN_MACHINES[HOSTNAME]) return KNOWN_MACHINES[HOSTNAME];
+
+  // Bilinmeyen makine — OS'a göre akıllı varsayılan tag'ler.
+  // Mac onboarding (Aşama 7) bu fallback ile başlar; sonra KNOWN_MACHINES'e
+  // tam entry eklenir (scripts/mac/onboard.sh otomatik patch atar).
+  return {
+    role: IS_MAC ? 'client' : IS_WIN ? 'server' : 'unknown',
+    tags: IS_WIN
+      ? ['win', 'docker', 'heavy']
+      : IS_MAC
+      ? ['mac', 'ios', 'light']
+      : ['linux'],
+    cores: CPU_COUNT,
+    ramGb: TOTAL_MEM_GB,
+    os: PLATFORM,
+    note: `Bilinmeyen makine: ${HOSTNAME}. KNOWN_MACHINES'e ekle (scripts/mac/onboard.sh otomatik yapar).`,
   };
 }
 
