@@ -1,0 +1,48 @@
+# Syncthing ignore şablonu — paylaşılan klasörün köküne kopyala (.stignore).
+#
+# İlke: Source-of-truth = Git. Syncthing yalnızca Git'e konmayacak büyük
+# dosyalar içindir (model ağırlıkları, dataset, render çıktıları, video).
+# Bu yüzden geçici/build/IDE artefaktlarını burada da yoksayıyoruz.
+
+# === VCS / IDE ===
+.git
+.svn
+.hg
+.idea
+.vscode
+
+# === Dependency / build ===
+node_modules
+__pycache__
+.venv
+venv
+.tox
+dist
+build
+target
+out
+*.egg-info
+
+# === Cache / temp ===
+.cache
+.next
+.parcel-cache
+.nyc_output
+coverage
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Log / tmp ===
+*.log
+*.tmp
+*.swp
+*.swo
+
+# === Secrets — ASLA syncthing'e koyma ===
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!*.pub

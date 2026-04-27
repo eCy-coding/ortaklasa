@@ -1,0 +1,41 @@
+// Tailscale ACL — kişisel tailnet için minimal şablon.
+// Yönetim:
+//   1) tailscale.com → DNS/ACL paneline git
+//   2) "Edit ACL" tıkla
+//   3) Bu dosyanın içeriğini yapıştır
+//   4) Kaydet — anlık yansır
+// Dokümantasyon: https://tailscale.com/kb/1018/acls/
+
+{
+  // Sadece kendi cihazların birbirine erişsin (en güvenli baseline).
+  "acls": [
+    { "action": "accept", "src": ["autogroup:member"], "dst": ["*:*"] }
+  ],
+
+  // Tailscale SSH: cihazlar arası password'süz, anahtar yerine TS auth.
+  // (Klasik OpenSSH yerine kullanılabilir; biz hem TS SSH hem klasik
+  // OpenSSH'ı paralel destekliyoruz — Aşama 3'te seçim sende.)
+  "ssh": [
+    {
+      "action": "accept",
+      "src":    ["autogroup:member"],
+      "dst":    ["autogroup:self"],
+      "users":  ["root", "autogroup:nonroot"]
+    }
+  ],
+
+  // Tag tabanlı gruplama — server/client ayrımı için.
+  // Bir cihazı `tailscale up --advertise-tags=tag:server` ile etiketleyebilirsin.
+  "tagOwners": {
+    "tag:server": ["autogroup:admin"],
+    "tag:client": ["autogroup:admin"]
+  },
+
+  // Magic DNS suffix (otomatik): <host>.<tailnet>.ts.net
+  // .env içine WINDOWS_HOST = desktop-ert7724.<tailnet>.ts.net olarak yaz.
+
+  "tests": [
+    // Smoke test — Mac PC'ye 22'den erişebilmeli (Aşama 3 sonrası).
+    // { "src": "macbook", "accept": ["desktop-ert7724:22"] }
+  ]
+}

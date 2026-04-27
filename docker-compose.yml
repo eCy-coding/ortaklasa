@@ -1,0 +1,70 @@
+# Ortaklasa servisleri — yalnızca Windows PC'de (M1) çalışır.
+# Mac'ten Tailscale FQDN üzerinden erişilir.
+#
+# Çalıştırma: docker compose up -d
+# Durdurma  : docker compose down
+# Sıfırlama : docker compose down -v   (volume'lar dahil siler)
+#
+# Önkoşul (Aşama 5):
+#   - Docker Desktop on Windows (WSL2 backend)
+#   - .env dosyası dolu (POSTGRES_*, REDIS_*, OLLAMA_*)
+#   - GPU pass-through için NVIDIA Container Toolkit (Ollama)
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ortaklasa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     ${PG_USER:-ortaklasa}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:?PG_PASSWORD .env içinde olmalı}
+      POSTGRES_DB:       ${PG_DB:-ortaklasa}
+    ports:
+      - "0.0.0.0:5432:5432"            # Tailscale ACL ile sınırlanır
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./config/postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ortaklasa-redis
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:6379:6379"
+    volumes:
+      - redisdata:/data
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "512mb",
+              "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ortaklasa-ollama
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:11434:11434"
+    volumes:
+      - ollamadata:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # GPU yoksa (CI vs.) bu servisi atlamak için: docker compose --profile gpu up
+    profiles: ["gpu", "default"]
+
+volumes:
+  pgdata:
+  redisdata:
+  ollamadata:
