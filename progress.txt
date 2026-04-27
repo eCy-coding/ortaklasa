@@ -21,7 +21,7 @@ FAZ B — Kurulum + yürütme (kullanıcı onayı gerekiyor)
 ID    Durum   Açıklama
 ----  ------  --------------------------------------------------
 B.1   ✓ DONE  Stage 1: GitHub repo (eCy-coding/ortaklasa, private) + 6 commit push edildi
-B.2   □ TODO  Stage 2: Tailscale install (Win + Mac), login, FQDN doğrula
+B.2   ✓ DONE  Stage 2: Tailscale 1.96.3 Win, login OK (emrecnyn@), tailnet=tail75df7f.ts.net, .env doldu
 B.3   □ TODO  Stage 3: OpenSSH Server (Win, admin) + Mac key authorize
 B.4   □ TODO  Stage 4: Syncthing + iki cihazı eşle
 B.5   □ TODO  Stage 5: Docker Desktop + compose up (Postgres/Redis/Ollama)
